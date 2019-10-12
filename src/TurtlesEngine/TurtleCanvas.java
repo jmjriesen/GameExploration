@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public class TurtleCanvas extends JPanel {
     static private final ArrayList<Turtle> population = new ArrayList<>();
 
-    private static boolean windowSetup = false;
 
 
 
@@ -33,17 +32,20 @@ public class TurtleCanvas extends JPanel {
         }
     }
 
-
+    private static boolean windowSetupLatch = false;
+    /**
+     * Sets up the one window for the Turtle application. If called a more then one time it will thorough an error.
+     */
     public static void WindowSetup() {
-        if (windowSetup) {
+        if (windowSetupLatch) {
             throw new InvalidStateException("Window already set up");
         }
-        windowSetup = true;
-        // Create frame with title Registration Demo
+        windowSetupLatch = true;
+
+        // Gui Set up
         JFrame frame = new JFrame();
         frame.setTitle("TurtlesEngine.Turtle styal graphics");
 
-        // Panel to define the layout. We are using GridBagLayout
         JPanel mainPanel = new TurtleCanvas();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
@@ -54,8 +56,8 @@ public class TurtleCanvas extends JPanel {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-
-        Thread thread = new Thread(() -> {
+        //Update thread set up.
+        Thread updateThread = new Thread(() -> {
             while (true) {
                 frame.repaint();
                 try {
@@ -65,7 +67,7 @@ public class TurtleCanvas extends JPanel {
                 }
             }
         });
-        thread.start();
+        updateThread.start();
 
     }
 }
