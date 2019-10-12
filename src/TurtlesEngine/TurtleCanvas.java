@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TurtleCanvas extends JPanel {
-    static final ArrayList<Turtle> turtles = new ArrayList<>();
+    static private final ArrayList<Turtle> population = new ArrayList<>();
 
     private static boolean windowSetup = false;
 
@@ -20,11 +20,16 @@ public class TurtleCanvas extends JPanel {
         super.paintComponent(g);     // paint parent's background
         setBackground(Color.BLACK);  // set background color for this JPanel
 
-        synchronized (turtles) {
-            for (Turtle turtle : turtles) {
+        synchronized (population) {
+            for (Turtle turtle : population) {
                 turtle.paint((Graphics2D) g);
                 turtle.update();
             }
+        }
+    }
+     static void addResident(Turtle turtle){
+        synchronized (population){
+            population.add(turtle);
         }
     }
 

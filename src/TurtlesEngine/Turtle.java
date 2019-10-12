@@ -15,9 +15,7 @@ public class Turtle {
 
     public Turtle(int xpos, int ypos, double bearing) {
         currentPos = new MovementCommand(xpos, ypos, bearing, 0);
-        synchronized (TurtleCanvas.turtles) {
-            TurtleCanvas.turtles.add(this);
-        }
+       TurtleCanvas.addResident(this);
     }
 
     public void paint(Graphics2D g) {
