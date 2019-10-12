@@ -7,13 +7,11 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TurtleCanvas extends JPanel {
-    static ArrayList<Turtle> turtles;
+    static final ArrayList<Turtle> turtles = new ArrayList<>();
 
     private static boolean windowSetup = false;
 
-    TurtleCanvas() {
-        turtles = new ArrayList<>();
-    }
+
 
     // Override paintComponent to perform your own painting
     @Override
@@ -22,9 +20,11 @@ public class TurtleCanvas extends JPanel {
         super.paintComponent(g);     // paint parent's background
         setBackground(Color.BLACK);  // set background color for this JPanel
 
-        for (Turtle turtle : turtles) {
-            turtle.paint((Graphics2D) g);
-            turtle.update();
+        synchronized (turtles) {
+            for (Turtle turtle : turtles) {
+                turtle.paint((Graphics2D) g);
+                turtle.update();
+            }
         }
     }
 

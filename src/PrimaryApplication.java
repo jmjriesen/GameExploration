@@ -1,13 +1,17 @@
 import TurtlesEngine.Turtle;
 import TurtlesEngine.TurtleCanvas;
+import org.omg.PortableInterceptor.INACTIVE;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Stack;
 
 public class PrimaryApplication {
     public static void main(String[] args) throws InterruptedException {
 
-        TurtleCanvas.WindowSetup();
-        /*
+       TurtleCanvas.WindowSetup();
+
         for (int i = 0; i < 100; i++) {
 
             Turtle turtle = new Turtle(20, 30, 0);
@@ -40,9 +44,9 @@ public class PrimaryApplication {
             turtle.forward(90,.5);
 
             Thread.sleep(300);
-        }*/
+        }
 
-
+/*
         Turtle turtle = new Turtle(50, 50, 0);
         turtle.locking = true;
         turtle.turn(1);
@@ -51,9 +55,13 @@ public class PrimaryApplication {
         Turtle turtle1 = new Turtle(50, 50, 0);
         turtle1.color = Color.RED;
         turtle1.forward(80, .5);
+        */
+
+
+
     }
-
-
 }
+
+
 
 
