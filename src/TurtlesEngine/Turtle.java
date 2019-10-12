@@ -7,17 +7,28 @@ import java.util.concurrent.CountDownLatch;
 
 public class Turtle {
 
-    private CountDownLatch  lock;
+    private CountDownLatch  commandLock;
     private MovementCommand currentPos;
     private Deque<MovementCommand> commandList = new LinkedList<>();
     public  Color                  color       = Color.GREEN;
-    public  boolean                locking     = false;
 
+    public  boolean commandsLockThreads = false;
+
+    /**
+     * Creates a new Turtle and regestrues it with the Canvas.
+     * @param xpos starting x position.
+     * @param ypos starting y position.
+     * @param bearing starting bearing.
+     */
     public Turtle(int xpos, int ypos, double bearing) {
         currentPos = new MovementCommand(xpos, ypos, bearing, 0);
        TurtleCanvas.addResident(this);
     }
 
+    /**
+     * Draws the Turtle on the graphic that is passed to it. Called in the update loop when redrawing the screen.
+     * @param g graphic we want to paint on.
+     */
     public void paint(Graphics2D g) {
         g.setColor(color);
         g.rotate(currentPos.barring, currentPos.xpos, currentPos.ypos);
@@ -26,49 +37,56 @@ public class Turtle {
 
     }
 
+    /**
+     * Updates the current position of the turtle. Moves closer to the position at the head of the queue if there is one.
+     * Also updates the commandLock that controls whether commands methods delay until commands are executed.
+     */
     public void update() {
         MovementCommand nextPos = commandList.peek();
         if (nextPos != null) {
+            //update position.
             if (currentPos.movetwards(nextPos)) {
                 commandList.remove();
-                if (commandList.isEmpty() && lock != null) {
-                    lock.countDown();
+
+                if (commandList.isEmpty() && commandLock != null) {
+                    commandLock.countDown();
                 }
             }
         }
     }
 
-    private void addCommand(MovementCommand movementCommand) throws InterruptedException {
+    private void enqueueCommand(MovementCommand movementCommand) throws InterruptedException {
         commandList.add(movementCommand);
-        if (locking) {
-            lock = new CountDownLatch(1);
-            lock.await();
+        if (commandsLockThreads) {
+            commandLock = new CountDownLatch(1);
+            commandLock.await();
         }
     }
 
-    public void moveto(double xpos, double ypos) throws InterruptedException {
-        moveto(xpos, ypos, .5);
+    public void moveTo(double xpos, double ypos) throws InterruptedException {
+        moveTo(xpos, ypos, .5);
     }
 
-    public void moveto(double xpos, double ypos, double speed) throws InterruptedException {
-        addCommand(new MovementCommand(xpos, ypos, currentPos.barring, speed));
+    public void moveTo(double xpos, double ypos, double speed) throws InterruptedException {
+        enqueueCommand(new MovementCommand(xpos, ypos, currentPos.barring, speed));
 
     }
 
     public void forward(double distance, double speed) throws InterruptedException {
         MovementCommand lastQueued = getLast();
+        //Set target coordinates.
         MovementCommand target     = new MovementCommand(lastQueued);
         target.xpos += distance * Math.cos(lastQueued.barring);
         target.ypos += distance * Math.sin(lastQueued.barring);
         target.speed = speed;
-        addCommand(target);
+        enqueueCommand(target);
     }
 
     public void turn(double angle) throws InterruptedException {
         MovementCommand target = new MovementCommand(getLast());
         target.speed = .5;
         target.barring += angle;
-        addCommand(target);
+        enqueueCommand(target);
     }
 
     private MovementCommand getLast() {

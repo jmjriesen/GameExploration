@@ -30,7 +30,7 @@ public class PrimaryApplication {
             }
             turtle.forward(90, .5);
             turtle.turn(1);
-            turtle.locking = false;
+            turtle.commandsLockThreads= false;
             turtle.forward(90, .5);
             turtle.turn(-1);
             turtle.forward(90, .5);
