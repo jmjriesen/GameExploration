@@ -4,12 +4,12 @@ import sun.plugin.dom.exception.InvalidStateException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class TurtleCanvas extends JPanel {
-    static private final ArrayList<Turtle> population = new ArrayList<>();
-
-
+    static private final ArrayList<WeakReference<Turtle>> population = new ArrayList<>();
 
 
     // Override paintComponent to perform your own painting
@@ -20,19 +20,34 @@ public class TurtleCanvas extends JPanel {
         setBackground(Color.BLACK);  // set background color for this JPanel
 
         synchronized (population) {
-            for (Turtle turtle : population) {
-                turtle.paint((Graphics2D) g);
-                turtle.update();
+            if (!population.isEmpty()) {
+                ListIterator<WeakReference<Turtle>> iterator = population.listIterator();
+
+                WeakReference<Turtle> reference;
+
+                while (iterator.hasNext()) {
+                    reference = iterator.next();
+
+                    Turtle turtle = reference.get();
+                    if (turtle == null) {
+                        iterator.remove();
+                    } else {
+                        turtle.paint((Graphics2D) g);
+                        turtle.update();
+                    }
+                }
             }
         }
     }
-     static void addResident(Turtle turtle){
-        synchronized (population){
-            population.add(turtle);
+
+    static void addResident(Turtle turtle) {
+        synchronized (population) {
+            population.add(new WeakReference<>(turtle));
         }
     }
 
     private static boolean windowSetupLatch = false;
+
     /**
      * Sets up the one window for the Turtle application. If called a more then one time it will thorough an error.
      */

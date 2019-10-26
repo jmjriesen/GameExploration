@@ -23,6 +23,7 @@ public class Turtle {
     public Turtle(int xpos, int ypos, double bearing) {
         currentPos = new MovementCommand(xpos, ypos, bearing, 0);
        TurtleCanvas.addResident(this);
+
     }
 
     /**
@@ -58,7 +59,7 @@ public class Turtle {
     private void enqueueCommand(MovementCommand movementCommand) throws InterruptedException {
         commandList.add(movementCommand);
         if (commandsLockThreads) {
-            commandLock = new CountDownLatch(1);
+            commandLock = new CountDownLatch(0);
             commandLock.await();
         }
     }
